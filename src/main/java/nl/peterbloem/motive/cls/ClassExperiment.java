@@ -55,6 +55,7 @@ import org.nodes.models.EdgeListModel;
 import org.nodes.models.USequenceEstimator;
 import org.nodes.models.DegreeSequenceModel.Prior;
 import org.nodes.motifs.AllSubgraphs;
+import org.omg.Messaging.SyncScopeHelper;
 import org.openrdf.rio.RDFFormat;
 
 import nl.peterbloem.kit.FileIO;
@@ -316,19 +317,36 @@ public class ClassExperiment
 		Global.log().info("Data count completed");
 		
 		// * Synched object to collect the counts from the different threads
-		class Collector {
-			private Map<UGraph<String>, List<Integer>> nullCounts = new LinkedHashMap<UGraph<String>, List<Integer>>();
-			
+		class Collector 
+		{
+			private Map<UGraph<String>, List<Integer>> nullCounts = new LinkedHashMap<>();
+			/**
+			 * We need a local (deep) copy of the motifs, or we get race conditions
+			 * when the hashcodes are computed concurrently (in the collector 
+			 * and in the threads)
+			 */
+			private List<UGraph<String>> local = new ArrayList<>();
+
 			public Collector()
 			{
 				for(UGraph<String> motif : motifs)
-					nullCounts.put(motif, new ArrayList<Integer>(samples));
+				{
+					UGraph<String> copy = MapUTGraph.copy(motif);
+					
+					local.add(copy);
+					nullCounts.put(copy, new ArrayList<Integer>(samples));
+				}
 			}
 			
 			public synchronized void register(FrequencyModel<UGraph<String>> sampleCounts)
 			{
-				for(UGraph<String> token : motifs)
-					nullCounts.get(token).add((int)sampleCounts.frequency(token));	
+				for(UGraph<String> token : local)
+				{
+					int count = (int)sampleCounts.frequency(token);
+					List<Integer> list = nullCounts.get(token);
+					list.add(count);
+					nullCounts.put(token, list);
+				}
 			}
 			
 			public Map<UGraph<String>, List<Integer>> nullCounts()
@@ -344,26 +362,34 @@ public class ClassExperiment
         ExecutorService executor = Executors.newFixedThreadPool(Global.numThreads());
         final AtomicInteger finished = new AtomicInteger(0); 
 
-		for(final int i : series(samples))
-		{
-			executor.execute(new Thread()
-			{
-				public void run()
-				{					
-					// * Generate a random graph
-					final Generator<UGraph<String>> gen = model.uniform(mixingTime);
-					UGraph<String> sample = gen.generate();
-					
-					// * Count its subgraphs
-					FrequencyModel<UGraph<String>> sampleCounts = count(sample, motifs);
-					
-					// * Add the counts to the nullCounts
-					collector.register(sampleCounts);
-					
-					finished.incrementAndGet();
-				}
-			});
-		}
+        class MThread extends Thread 
+        {
+        	private final List<UGraph<String>> local = new ArrayList<>();
+        	
+        	public MThread()
+        	{	
+				for(UGraph<String> motif : motifs)
+					local.add(MapUTGraph.copy(motif));
+        	}
+				
+			public void run()
+			{	
+				// * Generate a random graph
+				final Generator<UGraph<String>> gen = model.uniform(mixingTime);
+				UGraph<String> sample = gen.generate();
+				
+				// * Count its subgraphs
+				FrequencyModel<UGraph<String>> sampleCounts = count(sample, motifs);
+				
+				// * Add the counts to the nullCounts
+				collector.register(sampleCounts);
+				
+				finished.incrementAndGet();
+			}
+        }
+        
+		for(int i : series(samples))
+			executor.execute(new MThread());
 		
 		// * Execute all threads and wait until finished
 		executor.shutdown();
