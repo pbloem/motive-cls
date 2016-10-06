@@ -424,28 +424,28 @@ public class ClassExperiment
 	private List<Double> featuresMotive(UGraph<String> graph, List<UGraph<String>> motifs) 
 	{
 		
-//		System.out.println("n: " + graph.size() + " m: " + graph.numLinks() + "");
-//		UPlainMotifExtractor<String> ex = new UPlainMotifExtractor<String>(graph, motiveSamples, 3, 5);
-//	
-//		double threshold = - Functions.log2(alpha);
-//		System.out.println("Threshold: " + threshold);
-//		
-//		double baseline = new EdgeListModel(Prior.COMPLETE).codelength(graph);
-//		System.out.println("Baseline: " + baseline);
-//
-//		List<Integer> degrees = Graphs.degrees(graph);
-//				
-//		List<Double> features = new ArrayList<Double>(motifs.size());
-//		for(UGraph<String> motif : motifs)
-//		{
-//			List<List<Integer>> occ = ex.occurrences(motif);
-//			if(occ == null)
-//				occ = Collections.emptyList();
-//			
-//			double length = MotifSearchModel.sizeELInst(graph, degrees, motif, occ, true, -1);
-//			
-//			features.add( (baseline - length) > threshold ? 1.0 : 0.0 );
-//		}
+		System.out.println("n: " + graph.size() + " m: " + graph.numLinks() + "");
+		UPlainMotifExtractor<String> ex = new UPlainMotifExtractor<String>(graph, motiveSamples, 3, 5);
+	
+		double threshold = - Functions.log2(alpha);
+		System.out.println("Threshold: " + threshold);
+		
+		double baseline = new EdgeListModel(Prior.COMPLETE).codelength(graph);
+		System.out.println("Baseline: " + baseline);
+
+		List<Integer> degrees = Graphs.degrees(graph);
+				
+		List<Double> features = new ArrayList<Double>(motifs.size());
+		for(UGraph<String> motif : motifs)
+		{
+			List<List<Integer>> occ = ex.occurrences(motif);
+			if(occ == null)
+				occ = Collections.emptyList();
+			
+			double length = MotifSearchModel.sizeELInst(graph, degrees, motif, occ, true, -1);
+			
+			features.add( (baseline - length) > threshold ? 1.0 : 0.0 );
+		}
 	
 		return new Point();
 	}
