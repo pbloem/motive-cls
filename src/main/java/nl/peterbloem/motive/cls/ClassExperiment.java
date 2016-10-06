@@ -447,7 +447,7 @@ public class ClassExperiment
 			features.add( (baseline - length) > threshold ? 1.0 : 0.0 );
 		}
 	
-		return new Point();
+		return features;
 	}
 	
 	/**
