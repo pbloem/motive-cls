@@ -66,18 +66,18 @@
 	<dependency>
 	    <groupId>com.github.pbloem</groupId>
 	    <artifactId>motive</artifactId>
-	    <version>v0.1.14</version>
+	    <version>v0.1.16</version>
 	</dependency>
-<!-- 	<dependency> -->
-<!-- 	    <groupId>com.github.pbloem</groupId> -->
-<!-- 	    <artifactId>orca</artifactId> -->
-<!-- 	    <version>v0.1.1</version> -->
-<!-- 	</dependency> -->
-  	<dependency>
-  		<groupId>peterbloem.nl</groupId>
-  		<artifactId>orca</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
+	<dependency>
+	    <groupId>com.github.pbloem</groupId>
+	    <artifactId>orca</artifactId>
+	    <version>v0.1.2</version>
+	</dependency>
+<!--   	<dependency> -->
+<!--   		<groupId>peterbloem.nl</groupId> -->
+<!--   		<artifactId>orca</artifactId> -->
+<!--   		<version>0.0.1-SNAPSHOT</version> -->
+<!--   	</dependency> -->
   </dependencies>  
   
 	<repositories>
