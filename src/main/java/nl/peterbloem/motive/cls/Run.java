@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -103,6 +104,7 @@ public class Run
 			throw new RuntimeException("Could not read TSV classification file.", e);
 		}	
 		
+		exp.seed = new Random().nextInt(100000);
 		exp.hubsToRemove = classHubs;
 		exp.samples = classFMSamples;
 		exp.motiveSamples = classMotiveSamples;
