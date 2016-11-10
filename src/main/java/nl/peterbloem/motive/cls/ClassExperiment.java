@@ -159,7 +159,7 @@ public class ClassExperiment
 		
 		System.out.println(MaxObserver.quickSelect(10, Graphs.degrees(graph), intComp, false));
 		
-		System.out.println("graph read: " + Functions.toc() + " s, size " + graph.size());
+		System.out.println("graph read: " + Functions.toc() + " s, size: " + graph.size() + " numLinks: " + graph.numLinks());
 		
 		List<String> classInts = new ArrayList<String>(new LinkedHashSet<String>(map.values()));
 		System.out.println("table read: " + map.size());
